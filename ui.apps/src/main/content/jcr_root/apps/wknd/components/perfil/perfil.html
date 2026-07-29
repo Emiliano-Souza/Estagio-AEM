@@ -1,0 +1,21 @@
+<article
+    class="cmp-perfil"
+    data-sly-use.perfil="com.adobe.aem.guides.wknd.core.models.PerfilModel">
+
+    <h2 class="cmp-perfil__nome">
+        ${perfil.nome}
+    </h2>
+
+    <p
+        class="cmp-perfil__cargo"
+        data-sly-test="${perfil.cargo}">
+        ${perfil.cargo}
+    </p>
+
+    <p
+        class="cmp-perfil__bio"
+        data-sly-test="${perfil.bio}">
+        ${perfil.bio}
+    </p>
+
+</article>

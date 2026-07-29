@@ -39,6 +39,9 @@ public class HelloWorldModel {
     @Default(values="No resourceType")
     protected String resourceType;
 
+    @ValueMapValue(name = "subtitle", injectionStrategy = InjectionStrategy.OPTIONAL)
+    private String subtitle;
+
     @SlingObject
     private Resource currentResource;
     @SlingObject
@@ -60,6 +63,10 @@ public class HelloWorldModel {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
     }
 
 }

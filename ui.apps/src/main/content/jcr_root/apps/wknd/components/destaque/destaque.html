@@ -1,0 +1,34 @@
+<sly
+    data-sly-use.model="com.adobe.aem.guides.wknd.core.models.DestaqueModel"
+    data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"/>
+
+<sly data-sly-call="${clientlib.css @ categories='wknd.destaque'}"/>
+
+<section class="cmp-destaque" data-cmp-is="destaque">
+
+    <div class="cmp-destaque__content">
+
+        <h2
+            class="cmp-destaque__title"
+            data-sly-test="${model.titulo}">
+            ${model.titulo}
+        </h2>
+
+        <p
+            class="cmp-destaque__text"
+            data-sly-test="${model.texto}">
+            ${model.texto}
+        </p>
+
+        <a
+            class="cmp-destaque__button"
+            data-sly-test="${model.mostrarBotao}"
+            href="${model.urlBotao @ context='uri'}">
+            ${model.textoBotao}
+        </a>
+
+    </div>
+
+</section>
+
+<sly data-sly-call="${clientlib.js @ categories='wknd.destaque'}"/>
