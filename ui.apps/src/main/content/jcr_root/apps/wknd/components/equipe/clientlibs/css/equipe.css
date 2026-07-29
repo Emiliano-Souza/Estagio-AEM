@@ -1,0 +1,249 @@
+/* EQUIPE WKND — BASE */
+
+.cmp-equipe {
+    --equipe-fundo: #ffffff;
+    --equipe-texto: #111111;
+    --card-fundo: #f5c400;
+    --card-texto: #111111;
+    --card-borda: #111111;
+    --foto-borda: #111111;
+    --foto-tamanho: 240px;
+
+    box-sizing: border-box;
+    width: 100%;
+    padding: 3rem 2rem;
+    color: var(--equipe-texto);
+    background: var(--equipe-fundo);
+}
+
+.cmp-equipe *,
+.cmp-equipe *::before,
+.cmp-equipe *::after {
+    box-sizing: border-box;
+}
+
+.cmp-equipe__titulo {
+    margin: 0 0 2.5rem;
+    color: var(--equipe-texto);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    text-align: center;
+}
+
+.cmp-equipe__titulo::after {
+    display: block;
+    width: 64px;
+    height: 4px;
+    margin: 1rem auto 0;
+    background: var(--equipe-destaque);
+    content: "";
+}
+
+.cmp-equipe__lista {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.cmp-equipe--colunas-2 .cmp-equipe__lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cmp-equipe--colunas-3 .cmp-equipe__lista {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cmp-equipe--colunas-4 .cmp-equipe__lista {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* CARD */
+
+.cmp-equipe__membro {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    height: 100%;
+    padding: 2rem 1.5rem;
+    overflow: hidden;
+
+    color: var(--card-texto);
+    text-align: center;
+    background: var(--card-fundo);
+
+    border: 1px solid var(--card-borda);
+    border-radius: 0.5rem;
+
+    box-shadow: var(--card-sombra);
+
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.cmp-equipe__membro::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+
+    height: 5px;
+    background: var(--equipe-destaque);
+
+    content: "";
+}
+
+.cmp-equipe__membro:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-sombra-hover);
+}
+
+/* FOTO */
+
+.cmp-equipe__foto {
+    display: block;
+    width: min(100%, var(--foto-tamanho));
+    aspect-ratio: 1 / 1;
+    margin: 0 auto 1.5rem;
+
+    object-fit: cover;
+    object-position: center;
+
+    border: 3px solid var(--foto-borda);
+}
+
+.cmp-equipe--foto-pequena {
+    --foto-tamanho: 160px;
+}
+
+.cmp-equipe--foto-media {
+    --foto-tamanho: 240px;
+}
+
+.cmp-equipe--foto-grande {
+    --foto-tamanho: 320px;
+}
+
+/* Formato configurado pela policy */
+
+.cmp-equipe--formato-circular .cmp-equipe__foto {
+    border-radius: 50%;
+}
+
+.cmp-equipe--formato-arredondada .cmp-equipe__foto {
+    border-radius: 1rem;
+}
+
+.cmp-equipe--formato-quadrada .cmp-equipe__foto {
+    border-radius: 0;
+}
+
+/* TEXTOS */
+
+.cmp-equipe__nome {
+    margin: 0 0 0.75rem;
+    color: var(--card-texto);
+    font-size: 1.5rem;
+    line-height: 1.2;
+}
+
+.cmp-equipe__cargo {
+    margin: 0;
+    color: var(--card-texto);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.cmp-equipe__vazio {
+    margin: 0;
+    color: var(--equipe-texto);
+    text-align: center;
+}
+
+/* TEMAS */
+
+.tema-equipe-claro .cmp-equipe {
+    --equipe-fundo: #ffffff;
+    --equipe-texto: #202020;
+    --equipe-destaque: #f5c400;
+
+    --card-fundo: #ffffff;
+    --card-texto: #202020;
+    --card-borda: #d8d8d8;
+
+    --foto-borda: #202020;
+
+    --card-sombra: 0 6px 18px rgb(0 0 0 / 10%);
+    --card-sombra-hover: 0 12px 26px rgb(0 0 0 / 16%);
+}
+
+.tema-equipe-escuro .cmp-equipe{
+    --equipe-fundo: #202020;
+    --equipe-texto: #ffffff;
+    --equipe-destaque: #f5c400;
+
+    --card-fundo: #2b2b2b;
+    --card-texto: #ffffff;
+    --card-borda: #444444;
+
+    --foto-borda: #f5c400;
+
+    --card-sombra: 0 8px 22px rgb(0 0 0 / 30%);
+    --card-sombra-hover: 0 14px 30px rgb(0 0 0 / 42%);
+}
+
+.tema-equipe-wknd .cmp-equipe {
+    --equipe-fundo: #ffffff;
+    --equipe-texto: #202020;
+    --equipe-destaque: #f5c400;
+
+    --card-fundo: #202020;
+    --card-texto: #ffffff;
+    --card-borda: #202020;
+
+    --foto-borda: #f5c400;
+
+    --card-sombra: 0 7px 20px rgb(0 0 0 / 18%);
+    --card-sombra-hover: 0 14px 30px rgb(0 0 0 / 28%);
+}
+
+/* DEGRADAÇÃO ELEGANTE */
+
+.cmp-equipe__membro--sem-foto .cmp-equipe__foto {
+    display: none;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1000px) {
+    .cmp-equipe--colunas-3 .cmp-equipe__lista,
+    .cmp-equipe--colunas-4 .cmp-equipe__lista {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .cmp-equipe {
+        padding: 2rem 1rem;
+    }
+
+    .cmp-equipe__lista,
+    .cmp-equipe--colunas-2 .cmp-equipe__lista,
+    .cmp-equipe--colunas-3 .cmp-equipe__lista,
+    .cmp-equipe--colunas-4 .cmp-equipe__lista {
+        grid-template-columns: 1fr;
+    }
+
+    .cmp-equipe__membro {
+        padding: 1.5rem 1rem;
+    }
+
+    .cmp-equipe--foto-grande {
+        --foto-tamanho: 260px;
+    }
+}
