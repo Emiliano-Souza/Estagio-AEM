@@ -1,0 +1,369 @@
+/* ============================================================
+ * ÚLTIMAS DO MAGAZINE — BASE
+ * ============================================================ */
+
+.cmp-ultimas-magazine {
+    --ultimas-fundo: #ffffff;
+    --ultimas-texto: #202020;
+    --ultimas-texto-secundario: #555555;
+    --ultimas-destaque: #f5c400;
+
+    --card-fundo: #ffffff;
+    --card-texto: #202020;
+    --card-borda: #d8d8d8;
+
+    --imagem-fundo: #e8e8e8;
+
+    --card-sombra: 0 6px 18px rgb(0 0 0 / 10%);
+    --card-sombra-hover: 0 12px 26px rgb(0 0 0 / 16%);
+
+    box-sizing: border-box;
+    width: 100%;
+    padding: 3rem 2rem;
+
+    color: var(--ultimas-texto);
+    background: var(--ultimas-fundo);
+}
+
+.cmp-ultimas-magazine *,
+.cmp-ultimas-magazine *::before,
+.cmp-ultimas-magazine *::after {
+    box-sizing: border-box;
+}
+
+/* ============================================================
+ * CABEÇALHO
+ * ============================================================ */
+
+.cmp-ultimas-magazine__cabecalho {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.cmp-ultimas-magazine__rotulo {
+    margin: 0 0 0.75rem;
+
+    color: var(--ultimas-destaque);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.cmp-ultimas-magazine__titulo {
+    margin: 0;
+
+    color: var(--ultimas-texto);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+}
+
+.cmp-ultimas-magazine__titulo::after {
+    display: block;
+    width: 64px;
+    height: 4px;
+    margin: 1rem auto 0;
+
+    background: var(--ultimas-destaque);
+
+    content: "";
+}
+
+/* ============================================================
+ * GRID
+ * ============================================================ */
+
+.cmp-ultimas-magazine__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0;
+
+    list-style: none;
+}
+
+.cmp-ultimas-magazine__item {
+    min-width: 0;
+}
+
+/* Quantidade de colunas configurada pela Policy */
+
+.coluna-ultimas-magazine--colunas-2 .cmp-ultimas-magazine__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.coluna-ultimas-magazine--colunas-3 .cmp-ultimas-magazine__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.coluna-ultimas-magazine--colunas-4 .cmp-ultimas-magazine__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* ============================================================
+ * CARD
+ * ============================================================ */
+
+.cmp-ultimas-magazine__card {
+    position: relative;
+
+    height: 100%;
+    overflow: hidden;
+
+    color: var(--card-texto);
+    background: var(--card-fundo);
+
+    border: 1px solid var(--card-borda);
+    border-radius: 0.5rem;
+
+    box-shadow: var(--card-sombra);
+
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.cmp-ultimas-magazine__card::before {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    left: 0;
+
+    height: 5px;
+    background: var(--ultimas-destaque);
+
+    content: "";
+}
+
+.cmp-ultimas-magazine__card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-sombra-hover);
+}
+
+.cmp-ultimas-magazine__link {
+    display: flex;
+    height: 100%;
+
+    color: inherit;
+    text-decoration: none;
+
+    flex-direction: column;
+}
+
+.cmp-ultimas-magazine__link:focus-visible {
+    outline: 3px solid var(--ultimas-destaque);
+    outline-offset: 4px;
+}
+
+/* ============================================================
+ * IMAGEM
+ * ============================================================ */
+
+.cmp-ultimas-magazine__imagem-container {
+    position: relative;
+
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+
+    background: var(--imagem-fundo);
+}
+
+.cmp-ultimas-magazine__imagem {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    transition: transform 220ms ease;
+}
+
+.cmp-ultimas-magazine__card:hover
+.cmp-ultimas-magazine__imagem {
+    transform: scale(1.04);
+}
+
+/* Fallback para páginas sem imagem */
+
+.cmp-ultimas-magazine__imagem-vazia {
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    align-items: center;
+    justify-content: center;
+
+    color: var(--ultimas-texto-secundario);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+}
+
+/* ============================================================
+ * CONTEÚDO DO CARD
+ * ============================================================ */
+
+.cmp-ultimas-magazine__conteudo {
+    display: flex;
+    padding: 1.5rem;
+
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.cmp-ultimas-magazine__artigo-titulo {
+    margin: 0;
+
+    color: var(--card-texto);
+    font-size: 1.25rem;
+    line-height: 1.3;
+}
+
+.cmp-ultimas-magazine__acao {
+    color: var(--ultimas-destaque);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+ * LISTA VAZIA
+ * ============================================================ */
+
+.cmp-ultimas-magazine__vazio {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+
+    color: var(--ultimas-texto-secundario);
+    text-align: center;
+
+    border: 1px dashed var(--card-borda);
+    border-radius: 0.5rem;
+}
+
+.cmp-ultimas-magazine__vazio p {
+    margin: 0;
+}
+
+/* ============================================================
+ * TEMAS — STYLE SYSTEM
+ * ============================================================ */
+
+/* Tema claro */
+
+.tema-ultimas-magazine-claro .cmp-ultimas-magazine {
+    --ultimas-fundo: #ffffff;
+    --ultimas-texto: #202020;
+    --ultimas-texto-secundario: #555555;
+    --ultimas-destaque: #f5c400;
+
+    --card-fundo: #ffffff;
+    --card-texto: #202020;
+    --card-borda: #d8d8d8;
+
+    --imagem-fundo: #e8e8e8;
+
+    --card-sombra: 0 6px 18px rgb(0 0 0 / 10%);
+    --card-sombra-hover: 0 12px 26px rgb(0 0 0 / 16%);
+}
+
+/* Tema escuro */
+
+.tema-ultimas-magazine-escuro .cmp-ultimas-magazine {
+    --ultimas-fundo: #202020;
+    --ultimas-texto: #ffffff;
+    --ultimas-texto-secundario: #c8c8c8;
+    --ultimas-destaque: #f5c400;
+
+    --card-fundo: #2b2b2b;
+    --card-texto: #ffffff;
+    --card-borda: #444444;
+
+    --imagem-fundo: #333333;
+
+    --card-sombra: 0 8px 22px rgb(0 0 0 / 30%);
+    --card-sombra-hover: 0 14px 30px rgb(0 0 0 / 42%);
+}
+
+/* Tema WKND: fundo claro com cards escuros */
+
+.tema-ultimas-magazine-wknd .cmp-ultimas-magazine {
+    --ultimas-fundo: #ffffff;
+    --ultimas-texto: #202020;
+    --ultimas-texto-secundario: #555555;
+    --ultimas-destaque: #f5c400;
+
+    --card-fundo: #202020;
+    --card-texto: #ffffff;
+    --card-borda: #202020;
+
+    --imagem-fundo: #333333;
+
+    --card-sombra: 0 7px 20px rgb(0 0 0 / 18%);
+    --card-sombra-hover: 0 14px 30px rgb(0 0 0 / 28%);
+}
+
+/* ============================================================
+ * RESPONSIVIDADE
+ * ============================================================ */
+
+@media (max-width: 1000px) {
+    .cmp-ultimas-magazine__grid,
+    .cmp-ultimas-magazine--colunas-3
+    .cmp-ultimas-magazine__grid,
+    .cmp-ultimas-magazine--colunas-4
+    .cmp-ultimas-magazine__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .cmp-ultimas-magazine {
+        padding: 2rem 1rem;
+    }
+
+    .cmp-ultimas-magazine__grid,
+    .cmp-ultimas-magazine--colunas-2
+    .cmp-ultimas-magazine__grid,
+    .cmp-ultimas-magazine--colunas-3
+    .cmp-ultimas-magazine__grid,
+    .cmp-ultimas-magazine--colunas-4
+    .cmp-ultimas-magazine__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cmp-ultimas-magazine__conteudo {
+        padding: 1.25rem;
+    }
+}
+
+/* ============================================================
+ * ACESSIBILIDADE
+ * ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .cmp-ultimas-magazine__card,
+    .cmp-ultimas-magazine__imagem {
+        transition: none;
+    }
+
+    .cmp-ultimas-magazine__card:hover {
+        transform: none;
+    }
+
+    .cmp-ultimas-magazine__card:hover
+    .cmp-ultimas-magazine__imagem {
+        transform: none;
+    }
+}
