@@ -1,0 +1,53 @@
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.all @ categories='wknd.equipe'}"></sly>
+</sly>
+
+<sly data-sly-use.model="com.adobe.aem.guides.wknd.core.models.EquipeModel"></sly>
+
+<section class="${model.cssClasses}">
+
+    <h2
+        class="cmp-equipe__titulo"
+        data-sly-test="${model.titulo}">
+        ${model.titulo}
+    </h2>
+
+    <div
+        class="cmp-equipe__lista"
+        data-sly-test="${model.membros}">
+
+        <sly data-sly-list.membro="${model.membros}">
+
+            <article class="cmp-equipe__membro">
+
+                <img
+                    class="cmp-equipe__foto"
+                    data-sly-test="${model.mostrarFoto && membro.foto}"
+                    src="${membro.foto @ context='uri'}"
+                    alt="${membro.nome}"
+                    loading="lazy">
+
+                <h3
+                    class="cmp-equipe__nome"
+                    data-sly-test="${membro.nome}">
+                    ${membro.nome}
+                </h3>
+
+                <p
+                    class="cmp-equipe__cargo"
+                    data-sly-test="${model.mostrarCargo && membro.cargo}">
+                    ${membro.cargo}
+                </p>
+
+            </article>
+
+        </sly>
+    </div>
+
+    <p
+        class="cmp-equipe__vazio"
+        data-sly-test="${!model.membros}">
+        Nenhum membro cadastrado.
+    </p>
+
+</section>
