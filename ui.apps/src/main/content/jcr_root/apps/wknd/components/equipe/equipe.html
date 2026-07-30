@@ -2,40 +2,49 @@
     <sly data-sly-call="${clientlib.all @ categories='wknd.equipe'}"></sly>
 </sly>
 
-<sly data-sly-use.model="com.adobe.aem.guides.wknd.core.models.EquipeModel"></sly>
+<sly data-sly-use.model="com.adobe.aem.guides.wknd.core.models.Equipe"></sly>
 
-<section class="${model.cssClasses}">
+<sly data-sly-set.membros="${model.membros}"></sly>
 
-    <h2
-        class="cmp-equipe__titulo"
-        data-sly-test="${model.titulo}">
+<section class="cmp-equipe">
+
+    <h2 class="cmp-equipe__titulo">
         ${model.titulo}
     </h2>
 
     <div
         class="cmp-equipe__lista"
-        data-sly-test="${model.membros}">
+        data-sly-test="${membros}">
 
-        <sly data-sly-list.membro="${model.membros}">
+        <sly data-sly-list.membro="${membros}">
 
             <article class="cmp-equipe__membro">
 
-                <img
-                    class="cmp-equipe__foto"
-                    data-sly-test="${model.mostrarFoto && membro.foto}"
-                    src="${membro.foto @ context='uri'}"
-                    alt="${membro.nome}"
-                    loading="lazy">
+                <sly data-sly-test="${model.mostrarFoto}">
 
-                <h3
-                    class="cmp-equipe__nome"
-                    data-sly-test="${membro.nome}">
+                    <img
+                        class="cmp-equipe__foto"
+                        data-sly-test="${membro.temFoto}"
+                        src="${membro.foto @ context='uri'}"
+                        alt="${membro.nome}"
+                        loading="lazy">
+
+                    <div
+                        class="cmp-equipe__avatar"
+                        hidden="${membro.temFoto}"
+                        aria-hidden="true">
+                        ${membro.inicial}
+                    </div>
+
+                </sly>
+
+                <h3 class="cmp-equipe__nome">
                     ${membro.nome}
                 </h3>
 
                 <p
                     class="cmp-equipe__cargo"
-                    data-sly-test="${model.mostrarCargo && membro.cargo}">
+                    data-sly-test="${model.mostrarCargo && membro.temCargo}">
                     ${membro.cargo}
                 </p>
 
@@ -46,8 +55,8 @@
 
     <p
         class="cmp-equipe__vazio"
-        data-sly-test="${!model.membros}">
-        Nenhum membro cadastrado.
+        data-sly-test="${wcmmode.edit && !membros}">
+        Cadastre pelo menos um membro no componente Equipe.
     </p>
 
 </section>
