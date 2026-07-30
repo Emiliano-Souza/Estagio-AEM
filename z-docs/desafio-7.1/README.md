@@ -1,36 +1,47 @@
-# Desafio 7.1 — Componente Equipe WKND
+# Desafio 7.1 — Equipe WKND
 
 ## Resumo
 
-Implementação de um componente AEM para cadastro e exibição de membros de uma equipe no projeto WKND.
+Implementação do componente autoral **Equipe WKND** para cadastro e exibição de membros de uma equipe no projeto WKND.
 
-O componente permite cadastrar vários integrantes por meio de um **Multifield composto**, contendo:
+O componente utiliza:
 
-- Nome
-- Cargo
-- Foto
+- Multifield composto com nome, cargo e foto;
+- Sling Models com interfaces e implementações separadas;
+- `@ChildResource` para leitura dos membros;
+- `data-sly-list` para renderização no HTL;
+- serviço OSGi configurável para limitar a quantidade exibida;
+- Policy única com Style System;
+- tratamento de propriedades ausentes;
+- degradação elegante;
+- fallback visual para fotos ausentes.
 
-Os dados são lidos por Sling Models e renderizados no HTL. A quantidade máxima de membros exibidos é controlada por um serviço OSGi configurável, permitindo alteração em tempo de execução sem necessidade de novo deploy.
+A configuração `maxMembros` pode ser alterada pelo Console OSGi com a página aberta, sem recompilar o projeto e sem realizar novo deploy.
 
 ---
 
-## Funcionalidades implementadas
+## Requisitos atendidos
 
-- Componente `Equipe WKND`
-- Multifield composto
-- Cadastro de vários membros
-- Campos de nome, cargo e foto
-- Persistência dos membros como recursos filhos no JCR
-- Leitura da coleção com `@ChildResource`
-- Renderização com `data-sly-list`
-- Serviço OSGi configurável
-- Limite de membros definido por `maxMembros`
-- Injeção do serviço com `@OSGiService`
-- Atualização da configuração sem redeploy
-- Injeções opcionais
-- Valores padrão para campos ausentes
-- Tratamento de lista nula ou vazia
-- Degradação elegante após remoção de propriedades no CRXDE
+- [x] Componente `Equipe WKND`
+- [x] Multifield composto com nome, cargo e foto
+- [x] Persistência dos membros como recursos filhos no JCR
+- [x] Leitura da lista com `@ChildResource`
+- [x] Renderização com `data-sly-list`
+- [x] Serviço `ExibicaoEquipeService`
+- [x] Configuração OSGi `maxMembros`
+- [x] Injeção do serviço com `@OSGiService`
+- [x] Alteração do limite em runtime
+- [x] Alteração do limite sem redeploy
+- [x] `DefaultInjectionStrategy.OPTIONAL`
+- [x] Uso de `@Default` onde aplicável
+- [x] Tratamento de lista nula ou vazia
+- [x] Degradação elegante após remoção de propriedade no CRXDE
+- [x] Policy única vinculada ao template
+- [x] Style System para tema, colunas, formato e tamanho da foto
+- [x] Build do módulo `core`
+- [x] Build completo do projeto
+- [x] Evidências em imagens e vídeos
+- [ ] Revisão realizada por outro integrante
 
 ---
 
@@ -43,8 +54,11 @@ core/src/main/java/com/adobe/aem/guides/wknd/core/
 ├── config/
 │   └── ExibicaoEquipeConfig.java
 ├── models/
-│   ├── EquipeModel.java
-│   └── MembroEquipeModel.java
+│   ├── Equipe.java
+│   ├── MembroEquipe.java
+│   └── impl/
+│       ├── EquipeImpl.java
+│       └── MembroEquipeImpl.java
 └── services/
     ├── ExibicaoEquipeService.java
     └── impl/
@@ -63,18 +77,21 @@ ui.apps/src/main/content/jcr_root/apps/wknd/components/equipe/
 ├── clientlibs/
 │   ├── .content.xml
 │   ├── css.txt
-│   └── css/
-│       └── equipe.css
+│   ├── js.txt
+│   ├── css/
+│   │   └── equipe.css
+│   └── js/
+│       └── equipe.js
 └── equipe.html
 ```
 
 ---
 
-## Multifield composto
+## Dialog e Multifield composto
 
-O dialog do componente utiliza um Multifield composto para permitir o cadastro de vários membros.
+O dialog permite cadastrar vários integrantes dentro do mesmo componente.
 
-Cada item do Multifield possui os campos:
+Cada item do Multifield possui:
 
 ```text
 nome
@@ -82,7 +99,7 @@ cargo
 foto
 ```
 
-No repositório JCR, os dados são armazenados como recursos filhos:
+Os membros são armazenados como recursos filhos no JCR:
 
 ```text
 equipe
@@ -101,108 +118,172 @@ equipe
         └── foto
 ```
 
-Como os membros são armazenados como nós filhos, eles não podem ser tratados apenas com `@ValueMapValue`.
-
-A coleção é injetada no model principal utilizando:
+Como os integrantes são armazenados como nós filhos, a coleção é injetada no Model principal com:
 
 ```java
 @ChildResource(name = "membros")
-private List<MembroEquipeModel> membros;
+private List<MembroEquipe> membros;
 ```
+
+O uso de `@ChildResource` representa corretamente a estrutura criada pelo Multifield composto.
 
 ---
 
 ## Sling Models
 
-### EquipeModel
+### Interface `Equipe`
 
-O `EquipeModel` representa o componente principal.
+A interface `Equipe` define o contrato utilizado pelo HTL.
 
-Suas responsabilidades são:
+Ela disponibiliza:
 
-- Ler as propriedades do componente
-- Injetar a lista de membros
-- Injetar o serviço OSGi
-- Consultar o limite configurado
-- Limitar a quantidade de membros exibidos
-- Retornar uma lista segura para o HTL
-- Disponibilizar configurações visuais da policy
+- título da seção;
+- lista de membros;
+- configuração para exibir cargos;
+- configuração para exibir fotos.
 
-O model principal é adaptado a partir de:
+```java
+public interface Equipe {
+
+    String RESOURCE_TYPE = "wknd/components/equipe";
+
+    String getTitulo();
+
+    List<MembroEquipe> getMembros();
+
+    boolean isMostrarCargo();
+
+    boolean isMostrarFoto();
+}
+```
+
+---
+
+### Implementação `EquipeImpl`
+
+O Model principal é adaptado de:
 
 ```java
 SlingHttpServletRequest
 ```
 
-Essa escolha foi utilizada porque o componente é executado no contexto de uma requisição e também pode acessar objetos relacionados à renderização atual.
+Suas responsabilidades são:
+
+- ler o título do componente;
+- injetar a lista de membros;
+- injetar o serviço OSGi;
+- consultar o limite configurado;
+- limitar a quantidade de membros;
+- retornar uma lista segura para o HTL;
+- consultar na Policy os booleanos `mostrarCargo` e `mostrarFoto`.
+
+Exemplo da injeção dos membros:
+
+```java
+@ChildResource(name = "membros")
+private List<MembroEquipe> membros;
+```
+
+Exemplo da injeção do serviço:
+
+```java
+@OSGiService
+private ExibicaoEquipeService exibicaoEquipeService;
+```
 
 ---
 
-### MembroEquipeModel
+### Interface `MembroEquipe`
 
-O `MembroEquipeModel` representa cada item cadastrado no Multifield.
+A interface representa cada membro cadastrado no Multifield.
 
-Ele é adaptado a partir de:
-
-```java
-Resource
-```
-
-Essa escolha foi utilizada porque cada membro é armazenado como um recurso filho dentro do nó `membros`.
-
-O model contém os campos:
+Ela disponibiliza:
 
 ```text
 nome
 cargo
 foto
+temCargo
+temFoto
+inicial
 ```
+
+A inicial é utilizada no avatar alternativo quando uma foto não foi cadastrada ou não pode ser carregada.
+
+---
+
+### Implementação `MembroEquipeImpl`
+
+Cada integrante é adaptado de:
+
+```java
+Resource
+```
+
+Essa escolha corresponde à estrutura real do JCR, em que cada item do Multifield é armazenado como um recurso filho dentro do nó `membros`.
 
 ---
 
 ## Estratégia de injeção
 
-Foi utilizada a estratégia:
+Os Models utilizam:
 
 ```java
 defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 ```
 
-Essa configuração permite que o Sling Model seja criado mesmo quando algum dado não estiver presente.
+A estratégia opcional permite que o Sling Model continue sendo criado mesmo quando alguma propriedade ou recurso não estiver disponível.
 
-Isso evita falhas em situações como:
+Isso protege cenários como:
 
-- Componente recém-adicionado
-- Campo opcional não preenchido
-- Conteúdo antigo
-- Conteúdo incompleto
-- Propriedade removida manualmente
-- Ausência do nó `membros`
-- Serviço temporariamente indisponível
+- componente recém-adicionado;
+- campo opcional não preenchido;
+- conteúdo antigo;
+- conteúdo incompleto;
+- propriedade removida no CRXDE;
+- ausência do nó `membros`;
+- serviço temporariamente indisponível.
 
-Sem a estratégia opcional, a ausência de uma propriedade poderia impedir a adaptação completa do Sling Model.
+Sem essa proteção, a ausência de uma propriedade poderia impedir a adaptação completa do Model e fazer o componente desaparecer da página.
+
+Foram utilizados injectors específicos:
+
+```text
+@ValueMapValue
+@ChildResource
+@OSGiService
+@ScriptVariable
+```
+
+O `@Inject` genérico não foi utilizado, pois os injectors específicos deixam clara a origem de cada valor e facilitam a manutenção e o debug.
 
 ---
 
-## Uso de @Default
+## Valores padrão
 
-Nos campos textuais foi utilizado:
+### Título
 
-```java
-@Default(values = "")
+Quando o título está ausente ou vazio, o componente utiliza:
+
+```text
+Nossa equipe
 ```
 
-Quando uma propriedade não existe, o campo recebe uma string vazia.
+### Nome
 
-Exemplo:
+Quando o nome está ausente ou vazio, o membro utiliza:
 
-```java
-@ValueMapValue
-@Default(values = "")
-private String cargo;
+```text
+Membro da equipe
 ```
 
-Essa decisão evita valores nulos no HTL e permite que o componente continue sendo renderizado mesmo quando uma informação estiver ausente.
+### Cargo
+
+Quando o cargo está ausente, o elemento não é renderizado no HTL.
+
+### Foto
+
+Quando a foto está ausente, o componente exibe um avatar contendo a inicial do nome.
 
 ---
 
@@ -210,9 +291,7 @@ Essa decisão evita valores nulos no HTL e permite que o componente continue sen
 
 O `@ChildResource` pode retornar uma lista nula quando o nó `membros` não existe.
 
-Por isso, o model trata esse cenário antes de aplicar qualquer operação sobre a coleção.
-
-Exemplo da estratégia utilizada:
+Por isso, o Model trata esse cenário antes de aplicar qualquer operação:
 
 ```java
 if (membros == null || membros.isEmpty()) {
@@ -220,252 +299,343 @@ if (membros == null || membros.isEmpty()) {
 }
 ```
 
-Dessa forma, o HTL recebe uma lista vazia em vez de um valor nulo.
+O HTL recebe uma lista vazia em vez de um valor nulo.
 
-Isso evita erros como:
+Esse tratamento evita erros como:
 
 ```text
 NullPointerException
 ```
 
-O componente continua funcionando mesmo quando nenhum membro está cadastrado ou quando o nó completo é removido no CRXDE.
+Quando nenhum integrante está cadastrado, o componente continua existindo e exibe uma orientação no modo de edição.
 
 ---
 
 ## Serviço OSGi
 
-A regra de limite de membros foi separada em um serviço OSGi.
-
-Arquivos relacionados:
+A regra de limite foi separada no serviço:
 
 ```text
-ExibicaoEquipeConfig.java
-ExibicaoEquipeService.java
-ExibicaoEquipeServiceImpl.java
+ExibicaoEquipeService
 ```
 
-O serviço disponibiliza o valor de:
+A configuração é declarada em:
+
+```text
+ExibicaoEquipeConfig
+```
+
+A propriedade:
 
 ```text
 maxMembros
 ```
 
-Esse valor define a quantidade máxima de integrantes que o componente pode exibir.
+define a quantidade máxima de membros que o componente pode exibir.
 
 ---
 
-## Motivo para utilizar um serviço OSGi
+## Implementação do serviço
 
-A regra de limite foi colocada em um serviço OSGi para não ficar fixa dentro do Sling Model.
-
-Essa separação permite:
-
-- Alterar o limite sem modificar o código
-- Alterar o limite sem recompilar o projeto
-- Alterar o limite sem realizar novo deploy
-- Centralizar a regra de exibição
-- Reutilizar a configuração em outros componentes
-- Separar regra de negócio e apresentação
-
----
-
-## Configuração OSGi
-
-A configuração foi declarada com:
+A implementação utiliza:
 
 ```java
-@ObjectClassDefinition
+@Component(service = ExibicaoEquipeService.class)
+@Designate(ocd = ExibicaoEquipeConfig.class)
 ```
 
-A implementação do serviço foi associada à configuração com:
-
-```java
-@Designate
-```
-
-O valor configurado é carregado pelos métodos:
+A configuração é carregada e atualizada com:
 
 ```java
 @Activate
 @Modified
 ```
 
-O uso de `@Modified` permite que o serviço seja atualizado quando a configuração é alterada no Console OSGi.
+Exemplo:
+
+```java
+@Activate
+@Modified
+protected void activate(ExibicaoEquipeConfig config) {
+    this.maxMembros = config.maxMembros();
+}
+```
+
+O uso de `@Modified` permite que a alteração feita no Console OSGi seja aplicada em runtime.
+
+---
+
+## Motivo para utilizar um serviço OSGi
+
+O limite de integrantes não foi fixado dentro do Sling Model.
+
+A separação em um serviço permite:
+
+- alterar o limite sem modificar o código;
+- alterar o limite sem recompilar;
+- alterar o limite sem realizar novo deploy;
+- centralizar a regra de exibição;
+- reutilizar a configuração;
+- manter o HTL focado apenas na apresentação;
+- separar regra de negócio e conteúdo editorial.
 
 ---
 
 ## Alteração sem redeploy
 
-O valor de `maxMembros` pode ser alterado no Console OSGi:
+A configuração pode ser acessada em:
 
 ```text
 http://localhost:4502/system/console/configMgr
 ```
 
-Configuração utilizada:
+Nome apresentado no console:
 
 ```text
-ExibicaoEquipeService
+WKND — Exibição da equipe
 ```
 
-Após salvar o novo valor:
+O teste realizado alterou:
 
-1. O OSGi atualiza a configuração
-2. O método marcado com `@Modified` é executado
-3. O novo limite é armazenado pelo serviço
-4. O Sling Model consulta o valor atualizado
-5. A página passa a exibir a nova quantidade
-
-Nenhum novo build ou deploy é necessário.
-
----
-
-## Injeção do serviço no Sling Model
-
-O serviço é recebido pelo `EquipeModel` por meio de:
-
-```java
-@OSGiService
-private ExibicaoEquipeService exibicaoEquipeService;
+```text
+maxMembros: 6 → 3
 ```
 
-O model consulta o serviço para determinar quantos membros devem ser retornados ao HTL.
+Após salvar a configuração:
 
-A regra de limitação permanece no backend e não é executada diretamente no arquivo HTML.
+1. o container OSGi atualizou a configuração;
+2. o método marcado com `@Modified` foi executado;
+3. o serviço recebeu o novo limite;
+4. o Model passou a retornar somente três membros;
+5. a página passou a exibir três membros;
+6. nenhum comando Maven foi executado;
+7. nenhum novo deploy foi realizado.
 
 ---
 
 ## Renderização no HTL
 
-O arquivo `equipe.html` utiliza `data-sly-list` para percorrer os membros retornados pelo model.
-
-Exemplo simplificado:
+O arquivo `equipe.html` percorre os integrantes com:
 
 ```html
-<div data-sly-list.membro="${model.membros}">
-    <article class="cmp-equipe__card">
-        <img
-            src="${membro.foto}"
-            alt="${membro.nome}"
-            class="cmp-equipe__foto">
-
-        <h3 class="cmp-equipe__nome">
-            ${membro.nome}
-        </h3>
-
-        <p class="cmp-equipe__cargo">
-            ${membro.cargo}
-        </p>
-    </article>
-</div>
+<sly data-sly-list.membro="${membros}">
 ```
 
-O HTL ficou responsável apenas pela apresentação.
+A regra de limite permanece no backend.
 
-As responsabilidades foram separadas da seguinte forma:
+O HTL recebe apenas a lista já preparada pelo Model e fica responsável pela estrutura de apresentação.
+
+A divisão de responsabilidades ficou assim:
 
 ```text
 Dialog          → cadastro dos membros
 JCR             → persistência dos dados
-Sling Models    → leitura e preparação dos dados
-Serviço OSGi    → regra de limite
-HTL             → renderização
-Clientlib       → apresentação visual
+Sling Models    → leitura e preparação
+Serviço OSGi    → limite de exibição
+Policy          → regras visuais e booleanos
+HTL             → estrutura e renderização
+Clientlib       → CSS e fallback de imagem
 ```
 
 ---
 
-## Policy e configurações visuais
+## Fallback da imagem
 
-As opções visuais foram separadas do conteúdo editorial utilizando a Design Dialog e a policy do template.
+O componente possui dois tratamentos para fotos ausentes.
 
-Essa decisão permite que o autor edite os membros pelo dialog, enquanto as configurações visuais permanecem controladas pela policy.
+### Foto não cadastrada
 
-Assim, o componente separa:
+Quando a propriedade `foto` não existe, o HTL renderiza um avatar com a inicial do nome.
+
+### Erro ao carregar a imagem
+
+A clientlib JavaScript monitora erros de carregamento.
+
+Quando a imagem não pode ser carregada:
+
+1. a imagem é ocultada;
+2. o avatar alternativo é exibido;
+3. o restante do card continua funcionando.
+
+Isso evita cards quebrados ou imagens inválidas visíveis na página.
+
+---
+
+## Policy e Style System
+
+Foi mantida apenas uma Policy vinculada ao template:
 
 ```text
-Conteúdo editorial → dialog
-Configuração visual → policy
-Regra de limite    → OSGi
+7.1 Desafio Componente
 ```
+
+A Policy antiga foi confirmada como não utilizada por outros templates e removida do repositório.
+
+---
+
+### Aparência
+
+A Policy controla:
+
+- Exibir cargo dos membros
+- Exibir fotos dos membros
+
+Essas propriedades são lidas pelo Model utilizando:
+
+```java
+@ScriptVariable
+private Style currentStyle;
+```
+
+---
+
+### Style System
+
+O Style System controla:
+
+#### Tema
+
+- Claro
+- Escuro
+- WKND
+
+#### Colunas
+
+- 2 colunas
+- 3 colunas
+- 4 colunas
+
+#### Formato da foto
+
+- Circular
+- Cantos arredondados
+- Quadrada
+
+#### Tamanho da foto
+
+- Pequena
+- Média
+- Grande
+
+As classes são aplicadas pelo Style System no wrapper externo do componente.
+
+O Model não monta classes CSS de tema, quantidade de colunas, formato ou tamanho da foto.
+
+---
+
+## Separação das configurações
+
+A implementação separa três tipos de responsabilidade:
+
+```text
+Conteúdo editorial → Dialog
+Apresentação       → Policy e Style System
+Regra de limite    → Serviço OSGi
+```
+
+Essa divisão evita misturar dados dos integrantes, configurações visuais e regras de negócio.
+
+---
+
+## Decisão sobre delegação
+
+O componente `Equipe WKND` é autoral e não possui um Core Component equivalente cujo contrato pudesse ser estendido de forma natural.
+
+Por isso, o padrão de delegação de Core Components não foi aplicado artificialmente.
+
+Forçar uma delegação sem um supertipo compatível adicionaria complexidade e dependência sem benefício funcional.
+
+A separação entre interfaces e implementações foi utilizada para manter contratos claros e facilitar a manutenção, mas não é apresentada como delegação de um Core Component.
 
 ---
 
 ## Degradação elegante
 
-Foram realizados testes removendo dados diretamente no CRXDE.
-
-### Teste 1 — Remoção do campo cargo
-
-Uma propriedade `cargo` foi removida de um membro.
+Foi realizado um teste removendo uma propriedade diretamente no CRXDE.
 
 Resultado:
 
-- O componente continuou funcionando
-- O membro continuou sendo exibido
-- O campo ausente recebeu valor padrão
-- Nenhuma exceção foi apresentada
+- o Sling Model continuou sendo adaptado;
+- o componente não desapareceu;
+- o integrante continuou sendo exibido;
+- os demais dados permaneceram disponíveis;
+- o comportamento alternativo foi aplicado;
+- nenhuma exceção foi apresentada.
 
-### Teste 2 — Remoção de um membro
+Também existe proteção para:
 
-Um nó de membro foi removido do JCR.
-
-Resultado:
-
-- Os membros restantes continuaram sendo exibidos
-- A lista foi atualizada normalmente
-- O componente não apresentou erro
-
-### Teste 3 — Remoção do nó membros
-
-O nó completo `membros` foi removido.
-
-Resultado:
-
-- O model retornou uma lista vazia
-- O HTL não tentou percorrer um valor nulo
-- O componente continuou sendo renderizado
-- Nenhum `NullPointerException` ocorreu
+- propriedade `nome` ausente;
+- propriedade `cargo` ausente;
+- propriedade `foto` ausente;
+- nó `membros` ausente;
+- lista de integrantes vazia;
+- serviço OSGi indisponível.
 
 ---
 
-## Decisões técnicas
+## Testes realizados
 
-### Uso de @ChildResource
+### 1. Multifield composto
 
-Foi utilizado porque os itens do Multifield são armazenados como recursos filhos no JCR.
+Foram cadastrados vários integrantes com nome, cargo e foto.
 
-### Model de membro adaptado de Resource
+Resultado:
 
-Cada membro corresponde diretamente a um recurso filho.
+- os itens foram persistidos abaixo do nó `membros`;
+- a lista foi injetada com `@ChildResource`;
+- os integrantes foram renderizados com `data-sly-list`.
 
-### Model principal adaptado de SlingHttpServletRequest
+---
 
-O componente principal é executado no contexto da requisição e pode acessar elementos relacionados à renderização.
+### 2. Limite OSGi sem redeploy
 
-### Uso de DefaultInjectionStrategy.OPTIONAL
+O valor de `maxMembros` foi alterado de `6` para `3` com a página aberta.
 
-Evita que a ausência de uma propriedade impeça a criação do model.
+Resultado:
 
-### Uso de @Default
+- a quantidade exibida mudou;
+- não houve novo build;
+- não houve instalação de pacote;
+- não houve novo deploy.
 
-Define valores seguros para campos textuais ausentes.
+---
 
-### Retorno de lista vazia
+### 3. Propriedade removida no CRXDE
 
-Evita o envio de valores nulos ao HTL.
+Uma propriedade de um integrante foi removida diretamente no repositório.
 
-### Uso de serviço OSGi
+Resultado:
 
-Mantém a regra de limite fora do componente e permite alteração em tempo de execução.
+- o Model continuou funcionando;
+- o componente não desapareceu;
+- os demais dados continuaram sendo exibidos;
+- o fallback esperado foi aplicado.
 
-### Uso de @Activate e @Modified
+---
 
-Permite carregar a configuração inicialmente e atualizar o serviço após mudanças no Console OSGi.
+### 4. Style System
 
-### Regra de limite no backend
+Foram validados:
 
-Evita colocar regra de negócio no HTL e mantém a apresentação mais simples.
+- temas Claro, Escuro e WKND;
+- 2, 3 e 4 colunas;
+- fotos circulares;
+- fotos com cantos arredondados;
+- fotos quadradas;
+- tamanhos pequeno, médio e grande.
+
+---
+
+### 5. Limpeza de Policy duplicada
+
+A Policy antiga foi confirmada como não utilizada por nenhum outro template.
+
+Após a exclusão:
+
+- a Policy correta continuou vinculada;
+- o template continuou funcionando;
+- a página continuou funcionando;
+- os estilos permaneceram disponíveis.
 
 ---
 
@@ -475,7 +645,7 @@ Evita colocar regra de negócio no HTL e mantém a apresentação mais simples.
 
 ![Dialog Multifield](./7.1-dialog-multifield.png)
 
-O dialog permite cadastrar vários membros, cada um com nome, cargo e foto.
+O dialog permite cadastrar vários integrantes, cada um com nome, cargo e foto.
 
 ---
 
@@ -487,23 +657,23 @@ O componente renderiza os integrantes cadastrados no Multifield.
 
 ---
 
-### Configuração OSGi antes da alteração
+### Configuração OSGi antes
 
 ![OSGi antes](./7.1-osgi-antes.png)
 
-Registro do valor inicial configurado para `maxMembros`.
+Registro do valor inicial de `maxMembros`.
 
 ---
 
-### Configuração OSGi depois da alteração
+### Configuração OSGi depois
 
 ![OSGi depois](./7.1-osgi-depois.png)
 
-Registro da alteração do limite pelo Console OSGi.
+Registro da alteração de `maxMembros` pelo Console OSGi.
 
 ---
 
-### Resultado depois da alteração OSGi
+### Resultado após alteração do OSGi
 
 ![Equipe após configuração OSGi](./7.1-equipe-osg-depois.png)
 
@@ -511,11 +681,11 @@ A página passou a respeitar o novo limite sem necessidade de redeploy.
 
 ---
 
-### Propriedade antes da remoção no CRXDE
+### Propriedade antes da remoção
 
 ![Propriedade antes da remoção](./7.1-propriedade-antes-removida-crxde.png)
 
-Registro do membro antes da remoção da propriedade.
+Registro do integrante antes da remoção da propriedade.
 
 ---
 
@@ -531,38 +701,34 @@ Registro da propriedade removida diretamente no repositório.
 
 ![Degradação elegante](./7.1-degradacao-elegante.png)
 
-O componente continuou funcionando mesmo após a remoção de dados.
+O componente continuou funcionando depois da remoção da propriedade.
 
 ---
 
 ## Evidências em vídeo
 
-### Alteração do limite sem redeploy
+### Alteração de `maxMembros` sem redeploy
 
 [Assistir ao vídeo](./7.1-MaxMember-NoRedeploy.mp4)
 
-Demonstração da alteração de `maxMembros` no Console OSGi e atualização do componente sem novo deploy.
-
-### Remoção de campo no CRXDE
-
-[Assistir ao vídeo](./7.1-crxe-campo-deletado.mp4)
-
-Demonstração da remoção de uma propriedade e do comportamento resiliente do componente.
-
-### Remoção de membro no CRXDE
-
-[Assistir ao vídeo](./7.1-crxe-membro-deletado.mp4)
-
-Demonstração da remoção de um membro completo sem causar falha na renderização.
+O vídeo demonstra a alteração no Console OSGi e a atualização da página sem execução de novo deploy.
 
 ---
 
-## Validação do projeto
+### Degradação elegante após alteração no CRXDE
 
-O projeto foi validado com:
+[Assistir ao vídeo](./7.1-DegradacaoElegante-Crxe.mp4)
+
+O vídeo demonstra a remoção de uma propriedade e o funcionamento do componente após a alteração.
+
+---
+
+## Build e instalação
+
+### Validação do módulo `core`
 
 ```bash
-mvn clean install -DskipTests
+mvn -pl core clean verify -DskipTests
 ```
 
 Resultado:
@@ -571,33 +737,61 @@ Resultado:
 BUILD SUCCESS
 ```
 
-Também foram verificados:
+---
 
-- Componente disponível no editor
-- Dialog funcionando
-- Multifield persistindo os dados
-- Sling Models ativos
-- Serviço OSGi ativo
-- Alteração de configuração sem redeploy
-- Tratamento de propriedades ausentes
-- Tratamento de lista vazia
-- Renderização correta no HTL
+### Validação completa
+
+```bash
+mvn clean verify -DskipTests
+```
+
+Resultado:
+
+```text
+BUILD SUCCESS
+```
+
+---
+
+### Instalação do bundle Java
+
+```bash
+mvn -pl core install -PautoInstallBundle -DskipTests
+```
+
+---
+
+### Instalação do componente e das clientlibs
+
+```bash
+mvn -pl ui.apps install -PautoInstallPackage -DskipTests
+```
 
 ---
 
 ## Resultado final
 
-O componente `Equipe WKND` atende aos requisitos do Desafio 7.1.
+O componente `Equipe WKND` atende aos critérios obrigatórios do Desafio 7.1:
 
-A implementação possui:
+- Multifield composto;
+- leitura dos itens com `@ChildResource`;
+- iteração no HTL com `data-sly-list`;
+- serviço OSGi configurável;
+- alteração de `maxMembros` em runtime;
+- alteração sem redeploy;
+- injectors opcionais;
+- valores padrão;
+- tratamento de lista nula ou vazia;
+- degradação elegante;
+- README com as decisões de injection strategy;
+- evidências do funcionamento.
 
-- Multifield composto
-- Sling Models
-- Injeção com `@ChildResource`
-- Renderização com `data-sly-list`
-- Serviço OSGi configurável
-- Alteração em tempo de execução
-- Tratamento de valores ausentes
-- Degradação elegante
-- Separação entre conteúdo, apresentação e regra de negócio
-- Evidências em imagens e vídeos
+Como complemento, a implementação também possui:
+
+- Policy única;
+- Style System;
+- temas visuais;
+- configuração de colunas;
+- configuração de formato e tamanho das fotos;
+- fallback visual para imagens ausentes;
+- separação entre interfaces e implementações.
