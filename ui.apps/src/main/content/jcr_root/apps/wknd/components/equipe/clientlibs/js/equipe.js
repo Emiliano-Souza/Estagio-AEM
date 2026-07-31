@@ -1,53 +1,57 @@
 (function () {
     "use strict";
 
-    const COMPONENT_SELECTOR = ".cmp-equipe";
     const IMAGE_SELECTOR = ".cmp-equipe__foto";
-    const CARD_SELECTOR = ".cmp-equipe__membro";
 
-    function tratarImagemQuebrada(imagem) {
+    function mostrarAvatar(imagem) {
+        const card = imagem.closest(".cmp-equipe__membro");
+
+        if (!card) {
+            return;
+        }
+
+        const avatar = card.querySelector(".cmp-equipe__avatar");
+
+        imagem.hidden = true;
+
+        if (avatar) {
+            avatar.hidden = false;
+        }
+    }
+
+    function prepararImagem(imagem) {
         if (imagem.dataset.equipeInicializada === "true") {
             return;
         }
 
         imagem.dataset.equipeInicializada = "true";
 
-        function marcarComoSemFoto() {
-            const card = imagem.closest(CARD_SELECTOR);
-
-            if (card) {
-                card.classList.add("cmp-equipe__membro--sem-foto");
-            }
-
-            imagem.hidden = true;
-        }
-
-        imagem.addEventListener("error", marcarComoSemFoto);
+        imagem.addEventListener(
+            "error",
+            function () {
+                mostrarAvatar(imagem);
+            },
+            { once: true }
+        );
 
         if (imagem.complete && imagem.naturalWidth === 0) {
-            marcarComoSemFoto();
+            mostrarAvatar(imagem);
         }
     }
 
-    function inicializarComponente(componente) {
-        componente
-            .querySelectorAll(IMAGE_SELECTOR)
-            .forEach(tratarImagemQuebrada);
-    }
-
-    function inicializarTodos() {
+    function inicializar() {
         document
-            .querySelectorAll(COMPONENT_SELECTOR)
-            .forEach(inicializarComponente);
+            .querySelectorAll(IMAGE_SELECTOR)
+            .forEach(prepararImagem);
     }
 
     if (document.readyState === "loading") {
         document.addEventListener(
             "DOMContentLoaded",
-            inicializarTodos,
+            inicializar,
             { once: true }
         );
     } else {
-        inicializarTodos();
+        inicializar();
     }
 })();

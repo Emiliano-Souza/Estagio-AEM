@@ -1,17 +1,26 @@
-/* EQUIPE WKND — BASE */
+/* ==========================================================
+   EQUIPE WKND — BASE
+   ========================================================== */
 
 .cmp-equipe {
     --equipe-fundo: #ffffff;
     --equipe-texto: #111111;
+    --equipe-destaque: #f5c400;
+
     --card-fundo: #f5c400;
     --card-texto: #111111;
     --card-borda: #111111;
+
     --foto-borda: #111111;
     --foto-tamanho: 240px;
+
+    --card-sombra: 0 6px 18px rgb(0 0 0 / 10%);
+    --card-sombra-hover: 0 12px 26px rgb(0 0 0 / 16%);
 
     box-sizing: border-box;
     width: 100%;
     padding: 3rem 2rem;
+
     color: var(--equipe-texto);
     background: var(--equipe-fundo);
 }
@@ -22,8 +31,13 @@
     box-sizing: border-box;
 }
 
+/* ==========================================================
+   TÍTULO
+   ========================================================== */
+
 .cmp-equipe__titulo {
     margin: 0 0 2.5rem;
+
     color: var(--equipe-texto);
     font-size: clamp(2rem, 4vw, 3rem);
     line-height: 1.1;
@@ -32,17 +46,25 @@
 
 .cmp-equipe__titulo::after {
     display: block;
+
     width: 64px;
     height: 4px;
     margin: 1rem auto 0;
+
     background: var(--equipe-destaque);
+
     content: "";
 }
+
+/* ==========================================================
+   LISTA
+   ========================================================== */
 
 .cmp-equipe__lista {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2rem;
+
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
@@ -60,13 +82,17 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-/* CARD */
+/* ==========================================================
+   CARD
+   ========================================================== */
 
 .cmp-equipe__membro {
     position: relative;
+
     display: flex;
     flex-direction: column;
     align-items: center;
+
     min-width: 0;
     height: 100%;
     padding: 2rem 1.5rem;
@@ -74,11 +100,10 @@
 
     color: var(--card-texto);
     text-align: center;
-    background: var(--card-fundo);
 
+    background: var(--card-fundo);
     border: 1px solid var(--card-borda);
     border-radius: 0.5rem;
-
     box-shadow: var(--card-sombra);
 
     transition:
@@ -93,6 +118,7 @@
     left: 0;
 
     height: 5px;
+
     background: var(--equipe-destaque);
 
     content: "";
@@ -103,19 +129,49 @@
     box-shadow: var(--card-sombra-hover);
 }
 
-/* FOTO */
+/* ==========================================================
+   FOTO E AVATAR DE FALLBACK
+   ========================================================== */
 
-.cmp-equipe__foto {
-    display: block;
+.cmp-equipe__foto,
+.cmp-equipe__avatar {
     width: min(100%, var(--foto-tamanho));
     aspect-ratio: 1 / 1;
     margin: 0 auto 1.5rem;
 
-    object-fit: cover;
-    object-position: center;
-
     border: 3px solid var(--foto-borda);
 }
+
+.cmp-equipe__foto {
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+.cmp-equipe__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--card-fundo);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    line-height: 1;
+
+    background: var(--foto-borda);
+}
+
+/*
+ * O CSS de foto/avatar usa display próprio.
+ * Por isso, o atributo hidden precisa ter prioridade.
+ */
+.cmp-equipe__foto[hidden],
+.cmp-equipe__avatar[hidden] {
+    display: none !important;
+}
+
+/* Tamanho configurado pela Policy */
 
 .cmp-equipe--foto-pequena {
     --foto-tamanho: 160px;
@@ -129,24 +185,30 @@
     --foto-tamanho: 320px;
 }
 
-/* Formato configurado pela policy */
+/* Formato configurado pela Policy */
 
-.cmp-equipe--formato-circular .cmp-equipe__foto {
+.cmp-equipe--formato-circular .cmp-equipe__foto,
+.cmp-equipe--formato-circular .cmp-equipe__avatar {
     border-radius: 50%;
 }
 
-.cmp-equipe--formato-arredondada .cmp-equipe__foto {
+.cmp-equipe--formato-arredondada .cmp-equipe__foto,
+.cmp-equipe--formato-arredondada .cmp-equipe__avatar {
     border-radius: 1rem;
 }
 
-.cmp-equipe--formato-quadrada .cmp-equipe__foto {
+.cmp-equipe--formato-quadrada .cmp-equipe__foto,
+.cmp-equipe--formato-quadrada .cmp-equipe__avatar {
     border-radius: 0;
 }
 
-/* TEXTOS */
+/* ==========================================================
+   TEXTOS
+   ========================================================== */
 
 .cmp-equipe__nome {
     margin: 0 0 0.75rem;
+
     color: var(--card-texto);
     font-size: 1.5rem;
     line-height: 1.2;
@@ -154,6 +216,7 @@
 
 .cmp-equipe__cargo {
     margin: 0;
+
     color: var(--card-texto);
     font-size: 1rem;
     line-height: 1.5;
@@ -161,11 +224,15 @@
 
 .cmp-equipe__vazio {
     margin: 0;
+
     color: var(--equipe-texto);
     text-align: center;
 }
 
-/* TEMAS */
+/* ==========================================================
+   TEMA CLARO
+   Cores mantidas iguais às do CSS antigo
+   ========================================================== */
 
 .tema-equipe-claro .cmp-equipe {
     --equipe-fundo: #ffffff;
@@ -182,7 +249,12 @@
     --card-sombra-hover: 0 12px 26px rgb(0 0 0 / 16%);
 }
 
-.tema-equipe-escuro .cmp-equipe{
+/* ==========================================================
+   TEMA ESCURO
+   Cores mantidas iguais às do CSS antigo
+   ========================================================== */
+
+.tema-equipe-escuro .cmp-equipe {
     --equipe-fundo: #202020;
     --equipe-texto: #ffffff;
     --equipe-destaque: #f5c400;
@@ -196,6 +268,11 @@
     --card-sombra: 0 8px 22px rgb(0 0 0 / 30%);
     --card-sombra-hover: 0 14px 30px rgb(0 0 0 / 42%);
 }
+
+/* ==========================================================
+   TEMA WKND
+   Cores mantidas iguais às do CSS antigo
+   ========================================================== */
 
 .tema-equipe-wknd .cmp-equipe {
     --equipe-fundo: #ffffff;
@@ -212,13 +289,9 @@
     --card-sombra-hover: 0 14px 30px rgb(0 0 0 / 28%);
 }
 
-/* DEGRADAÇÃO ELEGANTE */
-
-.cmp-equipe__membro--sem-foto .cmp-equipe__foto {
-    display: none;
-}
-
-/* RESPONSIVIDADE */
+/* ==========================================================
+   RESPONSIVIDADE
+   ========================================================== */
 
 @media (max-width: 1000px) {
     .cmp-equipe--colunas-3 .cmp-equipe__lista,
@@ -245,5 +318,19 @@
 
     .cmp-equipe--foto-grande {
         --foto-tamanho: 260px;
+    }
+}
+
+/* ==========================================================
+   ACESSIBILIDADE
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .cmp-equipe__membro {
+        transition: none;
+    }
+
+    .cmp-equipe__membro:hover {
+        transform: none;
     }
 }

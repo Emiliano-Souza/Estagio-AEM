@@ -27,95 +27,6 @@
 
                         <items jcr:primaryType="nt:unstructured">
 
-                            <colunas
-                                jcr:primaryType="nt:unstructured"
-                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                                fieldLabel="Quantidade de colunas"
-                                fieldDescription="Define quantos cards serão exibidos por linha em telas maiores."
-                                name="./colunas">
-
-                                <items jcr:primaryType="nt:unstructured">
-
-                                    <duas
-                                        jcr:primaryType="nt:unstructured"
-                                        text="2 colunas"
-                                        value="2"/>
-
-                                    <tres
-                                        jcr:primaryType="nt:unstructured"
-                                        text="3 colunas"
-                                        value="3"
-                                        selected="{Boolean}true"/>
-
-                                    <quatro
-                                        jcr:primaryType="nt:unstructured"
-                                        text="4 colunas"
-                                        value="4"/>
-
-                                </items>
-                            </colunas>
-
-                            <formatoFoto
-                                jcr:primaryType="nt:unstructured"
-                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                                fieldLabel="Formato da foto"
-                                fieldDescription="Define o formato visual das imagens dos membros."
-                                name="./formatoFoto">
-
-                                <items jcr:primaryType="nt:unstructured">
-
-                                    <circular
-                                        jcr:primaryType="nt:unstructured"
-                                        text="Circular"
-                                        value="circular"
-                                        selected="{Boolean}true"/>
-
-                                    <arredondada
-                                        jcr:primaryType="nt:unstructured"
-                                        text="Cantos arredondados"
-                                        value="arredondada"/>
-
-                                    <quadrada
-                                        jcr:primaryType="nt:unstructured"
-                                        text="Quadrada"
-                                        value="quadrada"/>
-
-                                </items>
-                            </formatoFoto>
-
-                            <tamanhoFoto
-                                jcr:primaryType="nt:unstructured"
-                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                                fieldLabel="Tamanho da foto"
-                                fieldDescription="Define o tamanho máximo das fotos dos membros."
-                                name="./tamanhoFoto">
-
-                                <items jcr:primaryType="nt:unstructured">
-
-                                    <pequena
-                                        jcr:primaryType="nt:unstructured"
-                                        text="Pequena — 160 px"
-                                        value="pequena"/>
-
-                                    <media
-                                        jcr:primaryType="nt:unstructured"
-                                        text="Média — 240 px"
-                                        value="media"
-                                        selected="{Boolean}true"/>
-
-                                    <grande
-                                        jcr:primaryType="nt:unstructured"
-                                        text="Grande — 320 px"
-                                        value="grande"/>
-
-                                </items>
-                            </tamanhoFoto>
-                        
-                            <styles
-                                jcr:primaryType="nt:unstructured"
-                                sling:resourceType="granite/ui/components/coral/foundation/include"
-                                path="/mnt/overlay/cq/gui/components/authoring/dialog/style/tab_design/styletab"/>
-
                             <mostrarCargo
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
@@ -129,7 +40,7 @@
                             <mostrarFoto
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
-                                fieldDescription="Define se as fotos serão exibidas."
+                                fieldDescription="Define se as fotos serão exibidas nos cards."
                                 name="./mostrarFoto"
                                 text="Exibir fotos dos membros"
                                 value="{Boolean}true"
@@ -138,8 +49,15 @@
 
                         </items>
                     </aparencia>
+
+                    <styles
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/include"
+                        path="/mnt/overlay/cq/gui/components/authoring/dialog/style/tab_design/styletab"/>
+
                 </items>
             </tabs>
+
         </items>
     </content>
 </jcr:root>
