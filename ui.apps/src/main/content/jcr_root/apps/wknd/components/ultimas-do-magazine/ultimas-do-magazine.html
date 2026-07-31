@@ -1,0 +1,89 @@
+<sly
+    data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"
+    data-sly-call="${clientlib.css @ categories='wknd.ultimas-do-magazine'}">
+</sly>
+
+<section
+    class="cmp-ultimas-magazine"
+    aria-labelledby="ultimas-magazine-titulo"
+    data-sly-use.model="com.adobe.aem.guides.wknd.core.models.UltimasDoMagazine">
+    <header class="cmp-ultimas-magazine__cabecalho">
+
+        <p class="cmp-ultimas-magazine__rotulo">
+            WKND Magazine
+        </p>
+
+        <h2
+            id="ultimas-magazine-titulo"
+            class="cmp-ultimas-magazine__titulo">
+            Últimas do Magazine
+        </h2>
+
+    </header>
+
+    <ul
+        class="cmp-ultimas-magazine__grid"
+        data-sly-test="${!model.vazio}">
+
+        <sly data-sly-list.artigo="${model.artigos}">
+
+            <li class="cmp-ultimas-magazine__item">
+
+                <article class="cmp-ultimas-magazine__card">
+
+                    <a
+                        class="cmp-ultimas-magazine__link"
+                        href="${artigo.link @ context='uri'}">
+
+                        <div class="cmp-ultimas-magazine__imagem-container">
+
+                            <img
+                                data-sly-test="${artigo.imagem}"
+                                class="cmp-ultimas-magazine__imagem"
+                                src="${artigo.imagem @ context='uri'}"
+                                alt="${artigo.titulo}"
+                                loading="lazy">
+
+                            <div
+                                data-sly-test="${!artigo.imagem}"
+                                class="cmp-ultimas-magazine__imagem-vazia"
+                                aria-hidden="true">
+                                WKND
+                            </div>
+
+                        </div>
+
+                        <div class="cmp-ultimas-magazine__conteudo">
+
+                            <h3 class="cmp-ultimas-magazine__artigo-titulo">
+                                ${artigo.titulo}
+                            </h3>
+
+                            <span
+                                class="cmp-ultimas-magazine__acao"
+                                aria-hidden="true">
+                                Ler artigo
+                            </span>
+
+                        </div>
+
+                    </a>
+
+                </article>
+
+            </li>
+
+        </sly>
+
+    </ul>
+
+    <div
+        class="cmp-ultimas-magazine__vazio"
+        data-sly-test="${model.vazio}"
+        role="status">
+
+        <p>Nenhum artigo foi encontrado no Magazine.</p>
+
+    </div>
+
+</section>
