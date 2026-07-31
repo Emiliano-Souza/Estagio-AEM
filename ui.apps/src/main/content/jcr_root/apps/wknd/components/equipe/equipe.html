@@ -1,0 +1,62 @@
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.all @ categories='wknd.equipe'}"></sly>
+</sly>
+
+<sly data-sly-use.model="com.adobe.aem.guides.wknd.core.models.Equipe"></sly>
+
+<sly data-sly-set.membros="${model.membros}"></sly>
+
+<section class="cmp-equipe">
+
+    <h2 class="cmp-equipe__titulo">
+        ${model.titulo}
+    </h2>
+
+    <div
+        class="cmp-equipe__lista"
+        data-sly-test="${membros}">
+
+        <sly data-sly-list.membro="${membros}">
+
+            <article class="cmp-equipe__membro">
+
+                <sly data-sly-test="${model.mostrarFoto}">
+
+                    <img
+                        class="cmp-equipe__foto"
+                        data-sly-test="${membro.temFoto}"
+                        src="${membro.foto @ context='uri'}"
+                        alt="${membro.nome}"
+                        loading="lazy">
+
+                    <div
+                        class="cmp-equipe__avatar"
+                        hidden="${membro.temFoto}"
+                        aria-hidden="true">
+                        ${membro.inicial}
+                    </div>
+
+                </sly>
+
+                <h3 class="cmp-equipe__nome">
+                    ${membro.nome}
+                </h3>
+
+                <p
+                    class="cmp-equipe__cargo"
+                    data-sly-test="${model.mostrarCargo && membro.temCargo}">
+                    ${membro.cargo}
+                </p>
+
+            </article>
+
+        </sly>
+    </div>
+
+    <p
+        class="cmp-equipe__vazio"
+        data-sly-test="${wcmmode.edit && !membros}">
+        Cadastre pelo menos um membro no componente Equipe.
+    </p>
+
+</section>

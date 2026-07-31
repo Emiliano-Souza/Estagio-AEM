@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root
+    xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Policy da Equipe WKND"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+
+        <items jcr:primaryType="nt:unstructured">
+
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs">
+
+                <items jcr:primaryType="nt:unstructured">
+
+                    <aparencia
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Aparência"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+
+                        <items jcr:primaryType="nt:unstructured">
+
+                            <mostrarCargo
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                fieldDescription="Define se o cargo será exibido nos cards."
+                                name="./mostrarCargo"
+                                text="Exibir cargo dos membros"
+                                value="{Boolean}true"
+                                uncheckedValue="{Boolean}false"
+                                checked="{Boolean}true"/>
+
+                            <mostrarFoto
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                fieldDescription="Define se as fotos serão exibidas nos cards."
+                                name="./mostrarFoto"
+                                text="Exibir fotos dos membros"
+                                value="{Boolean}true"
+                                uncheckedValue="{Boolean}false"
+                                checked="{Boolean}true"/>
+
+                        </items>
+                    </aparencia>
+
+                    <styles
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/include"
+                        path="/mnt/overlay/cq/gui/components/authoring/dialog/style/tab_design/styletab"/>
+
+                </items>
+            </tabs>
+
+        </items>
+    </content>
+</jcr:root>
