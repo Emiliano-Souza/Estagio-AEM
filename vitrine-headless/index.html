@@ -6,13 +6,17 @@
 
   <title>Vitrine de Aventuras WKND</title>
 
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./css/variables.css">
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body>
   <header class="site-header">
     <div class="container">
       <p class="site-header__eyebrow">WKND Adventures</p>
+
       <h1>Encontre sua próxima aventura</h1>
+
       <p>
         Catálogo carregado diretamente dos Content Fragments do AEM.
       </p>
@@ -24,19 +28,35 @@
       <h2 id="filters-title">Filtrar por dificuldade</h2>
 
       <div class="filters__actions">
-        <button type="button" data-difficulty="" class="filter-button is-active">
+        <button
+          type="button"
+          data-difficulty=""
+          class="filter-button is-active"
+        >
           Todas
         </button>
 
-        <button type="button" data-difficulty="facil" class="filter-button">
+        <button
+          type="button"
+          data-difficulty="facil"
+          class="filter-button"
+        >
           Fácil
         </button>
 
-        <button type="button" data-difficulty="moderada" class="filter-button">
+        <button
+          type="button"
+          data-difficulty="moderada"
+          class="filter-button"
+        >
           Moderada
         </button>
 
-        <button type="button" data-difficulty="dificil" class="filter-button">
+        <button
+          type="button"
+          data-difficulty="dificil"
+          class="filter-button"
+        >
           Difícil
         </button>
       </div>
@@ -45,6 +65,7 @@
     <section aria-labelledby="adventures-title">
       <div class="section-heading">
         <h2 id="adventures-title">Aventuras disponíveis</h2>
+
         <p id="results-count" aria-live="polite"></p>
       </div>
 
@@ -52,10 +73,13 @@
         Carregando aventuras...
       </div>
 
-      <div id="adventures-list" class="adventures-grid"></div>
+      <div
+        id="adventures-list"
+        class="adventures-grid"
+      ></div>
     </section>
   </main>
 
-  <script src="./app.js"></script>
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>
