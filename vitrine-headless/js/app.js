@@ -44,6 +44,67 @@ function hideStatus(element) {
 }
 
 
+/**
+ * Lê a dificuldade presente na URL da vitrine.
+ */
+function getDifficultyFromUrl() {
+  const params =
+    new URLSearchParams(window.location.search);
+
+  const difficulty =
+    params.get("dificuldade") || "";
+
+  const validDifficulties =
+    Array.from(filterButtons).map(
+      (button) => button.dataset.difficulty || ""
+    );
+
+  return validDifficulties.includes(difficulty)
+    ? difficulty
+    : "";
+}
+
+
+/**
+ * Atualiza a URL da vitrine sem recarregar a página.
+ */
+function updateUrl(difficulty = "") {
+  const url = new URL(window.location.href);
+
+  if (difficulty) {
+    url.searchParams.set(
+      "dificuldade",
+      difficulty
+    );
+  } else {
+    url.searchParams.delete("dificuldade");
+  }
+
+  window.history.pushState(
+    {},
+    "",
+    url
+  );
+}
+
+
+/**
+ * Mantém o botão visualmente sincronizado
+ * com a dificuldade ativa.
+ */
+function setActiveFilter(difficulty = "") {
+  filterButtons.forEach((button) => {
+    const buttonDifficulty =
+      button.dataset.difficulty || "";
+
+    button.classList.toggle(
+      "is-active",
+      buttonDifficulty === difficulty
+    );
+  });
+}
+
+
 function renderAdventures(adventures) {
   adventuresList.innerHTML = adventures
     .map(createAdventureCard)
@@ -156,21 +217,40 @@ async function loadMagazine() {
 }
 
 
+/**
+ * Clique nos filtros.
+ */
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    filterButtons.forEach((item) => {
-      item.classList.remove("is-active");
-    });
-
-    button.classList.add("is-active");
-
     const difficulty =
       button.dataset.difficulty || "";
 
+    setActiveFilter(difficulty);
+    updateUrl(difficulty);
     loadAdventures(difficulty);
   });
 });
 
 
-loadAdventures();
+/**
+ * Suporte aos botões Voltar/Avançar do navegador.
+ */
+window.addEventListener("popstate", () => {
+  const difficulty =
+    getDifficultyFromUrl();
+
+  setActiveFilter(difficulty);
+  loadAdventures(difficulty);
+});
+
+
+/**
+ * Estado inicial vindo da própria URL.
+ */
+const initialDifficulty =
+  getDifficultyFromUrl();
+
+setActiveFilter(initialDifficulty);
+
+loadAdventures(initialDifficulty);
 loadMagazine();
