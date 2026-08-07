@@ -8,5 +8,9 @@ public interface UltimasDoMagazine {
 
     List<ArtigoMagazine> getArtigos();
 
+    List<AventuraResumo> getAventuras();
+
     boolean isVazio();
+
+    boolean isAventurasVazio();
 }

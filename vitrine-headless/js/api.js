@@ -45,3 +45,26 @@ export async function fetchAdventures(difficulty = "") {
 
   return json.data?.aventuraList?.items ?? [];
 }
+
+export async function fetchMagazineArticles() {
+  const response = await fetch(
+    `${AEM_HOST}${ENDPOINTS.magazineExporter}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Model Exporter respondeu com o status ${response.status}.`
+    );
+  }
+
+  const json = await response.json();
+
+  return json.artigos ?? [];
+}

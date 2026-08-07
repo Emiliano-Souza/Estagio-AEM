@@ -24,10 +24,14 @@
   </header>
 
   <main class="container">
+
+    <!-- Filtros -->
+
     <section class="filters" aria-labelledby="filters-title">
       <h2 id="filters-title">Filtrar por dificuldade</h2>
 
       <div class="filters__actions">
+
         <button
           type="button"
           data-difficulty=""
@@ -59,17 +63,30 @@
         >
           Difícil
         </button>
+
       </div>
     </section>
 
-    <section aria-labelledby="adventures-title">
-      <div class="section-heading">
-        <h2 id="adventures-title">Aventuras disponíveis</h2>
+    <!-- Aventuras -->
 
-        <p id="results-count" aria-live="polite"></p>
+    <section aria-labelledby="adventures-title">
+
+      <div class="section-heading">
+        <h2 id="adventures-title">
+          Aventuras disponíveis
+        </h2>
+
+        <p
+          id="results-count"
+          aria-live="polite"
+        ></p>
       </div>
 
-      <div id="status" class="status" role="status">
+      <div
+        id="status"
+        class="status"
+        role="status"
+      >
         Carregando aventuras...
       </div>
 
@@ -77,9 +94,55 @@
         id="adventures-list"
         class="adventures-grid"
       ></div>
+
     </section>
+
+    <!-- Da Revista -->
+
+    <section
+      class="magazine"
+      aria-labelledby="magazine-title"
+    >
+
+      <div class="section-heading">
+
+        <div>
+          <p class="section-heading__eyebrow">
+            WKND Magazine
+          </p>
+
+          <h2 id="magazine-title">
+            Da Revista
+          </h2>
+        </div>
+
+        <p
+          id="magazine-count"
+          aria-live="polite"
+        ></p>
+
+      </div>
+
+      <div
+        id="magazine-status"
+        class="status"
+        role="status"
+      >
+        Carregando artigos...
+      </div>
+
+      <div
+        id="magazine-list"
+        class="magazine-grid"
+      ></div>
+
+    </section>
+
   </main>
 
-  <script type="module" src="./js/app.js"></script>
+  <script
+    type="module"
+    src="./js/app.js"
+  ></script>
 </body>
 </html>

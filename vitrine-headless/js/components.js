@@ -1,8 +1,5 @@
 import { AEM_HOST, DIFFICULTY_LABELS } from "./config.js";
 
-/**
- * Impede que textos recebidos da API sejam interpretados como HTML.
- */
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -12,9 +9,6 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#039;");
 }
 
-/**
- * Formata o preço no padrão brasileiro.
- */
 function formatPrice(value) {
   const price = Number(value);
 
@@ -28,9 +22,6 @@ function formatPrice(value) {
   }).format(price);
 }
 
-/**
- * Transforma uma aventura recebida do AEM em um card HTML.
- */
 export function createAdventureCard(adventure) {
   const title = escapeHtml(
     adventure.titulo || "Aventura sem título"
@@ -102,6 +93,77 @@ export function createAdventureCard(adventure) {
           </p>
         </div>
       </div>
+    </article>
+  `;
+}
+
+export function createMagazineCard(article) {
+  const title = escapeHtml(
+    article.titulo || "Artigo sem título"
+  );
+
+  const imageUrl = article.imagem
+    ? `${AEM_HOST}${article.imagem}`
+    : "";
+
+  const articleUrl = article.link
+    ? `${AEM_HOST}${article.link}`
+    : "";
+
+  const imageMarkup = imageUrl
+    ? `
+      <img
+        class="magazine-card__image"
+        src="${escapeHtml(imageUrl)}"
+        alt="${title}"
+        loading="lazy"
+      >
+    `
+    : `
+      <div
+        class="magazine-card__image-placeholder"
+        aria-hidden="true"
+      >
+        WKND
+      </div>
+    `;
+
+  const content = `
+    <div class="magazine-card__image-wrapper">
+      ${imageMarkup}
+    </div>
+
+    <div class="magazine-card__content">
+      <p class="magazine-card__eyebrow">
+        WKND Magazine
+      </p>
+
+      <h3 class="magazine-card__title">
+        ${title}
+      </h3>
+
+      <span class="magazine-card__action">
+        Ler artigo
+      </span>
+    </div>
+  `;
+
+  if (!articleUrl) {
+    return `
+      <article class="magazine-card">
+        ${content}
+      </article>
+    `;
+  }
+
+  return `
+    <article class="magazine-card">
+      <a
+        class="magazine-card__link"
+        href="${escapeHtml(articleUrl)}"
+      >
+        ${content}
+      </a>
     </article>
   `;
 }
