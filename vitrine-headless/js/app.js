@@ -43,10 +43,6 @@ function hideStatus(element) {
   element.classList.remove("status--error");
 }
 
-
-/**
- * Lê a dificuldade presente na URL da vitrine.
- */
 function getDifficultyFromUrl() {
   const params =
     new URLSearchParams(window.location.search);
@@ -64,10 +60,6 @@ function getDifficultyFromUrl() {
     : "";
 }
 
-
-/**
- * Atualiza a URL da vitrine sem recarregar a página.
- */
 function updateUrl(difficulty = "") {
   const url = new URL(window.location.href);
 
@@ -87,11 +79,6 @@ function updateUrl(difficulty = "") {
   );
 }
 
-
-/**
- * Mantém o botão visualmente sincronizado
- * com a dificuldade ativa.
- */
 function setActiveFilter(difficulty = "") {
   filterButtons.forEach((button) => {
     const buttonDifficulty =
@@ -216,10 +203,6 @@ async function loadMagazine() {
   }
 }
 
-
-/**
- * Clique nos filtros.
- */
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const difficulty =
@@ -231,10 +214,6 @@ filterButtons.forEach((button) => {
   });
 });
 
-
-/**
- * Suporte aos botões Voltar/Avançar do navegador.
- */
 window.addEventListener("popstate", () => {
   const difficulty =
     getDifficultyFromUrl();
@@ -243,10 +222,6 @@ window.addEventListener("popstate", () => {
   loadAdventures(difficulty);
 });
 
-
-/**
- * Estado inicial vindo da própria URL.
- */
 const initialDifficulty =
   getDifficultyFromUrl();
 
