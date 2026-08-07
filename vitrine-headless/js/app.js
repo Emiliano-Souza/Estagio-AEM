@@ -19,6 +19,54 @@ function hideStatus() {
   statusElement.classList.remove("status--error");
 }
 
+function getDifficultyFromUrl() {
+  const params =
+    new URLSearchParams(window.location.search);
+
+  const difficulty =
+    params.get("dificuldade") || "";
+
+  const validDifficulties =
+    Array.from(filterButtons).map(
+      (button) => button.dataset.difficulty || ""
+    );
+
+  return validDifficulties.includes(difficulty)
+    ? difficulty
+    : "";
+}
+
+function updateUrl(difficulty = "") {
+  const url = new URL(window.location.href);
+
+  if (difficulty) {
+    url.searchParams.set(
+      "dificuldade",
+      difficulty
+    );
+  } else {
+    url.searchParams.delete("dificuldade");
+  }
+
+  window.history.pushState(
+    {},
+    "",
+    url
+  );
+}
+
+function setActiveFilter(difficulty = "") {
+  filterButtons.forEach((button) => {
+    const buttonDifficulty =
+      button.dataset.difficulty || "";
+
+    button.classList.toggle(
+      "is-active",
+      buttonDifficulty === difficulty
+    );
+  });
+}
+
 function renderAdventures(adventures) {
   adventuresList.innerHTML = adventures
     .map(createAdventureCard)
@@ -32,7 +80,10 @@ function renderAdventures(adventures) {
       : `${total} aventuras encontradas`;
 
   if (total === 0) {
-    showStatus("Nenhuma aventura encontrada para este filtro.");
+    showStatus(
+      "Nenhuma aventura encontrada para este filtro."
+    );
+
     return;
   }
 
@@ -46,7 +97,8 @@ async function loadAdventures(difficulty = "") {
   showStatus("Carregando aventuras...");
 
   try {
-    const adventures = await fetchAdventures(difficulty);
+    const adventures =
+      await fetchAdventures(difficulty);
 
     renderAdventures(adventures);
   } catch (error) {
@@ -54,7 +106,10 @@ async function loadAdventures(difficulty = "") {
       return;
     }
 
-    console.error("Erro ao carregar aventuras:", error);
+    console.error(
+      "Erro ao carregar aventuras:",
+      error
+    );
 
     showStatus(
       "Não foi possível carregar as aventuras do AEM.",
@@ -65,16 +120,25 @@ async function loadAdventures(difficulty = "") {
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    filterButtons.forEach((item) => {
-      item.classList.remove("is-active");
-    });
+    const difficulty =
+      button.dataset.difficulty || "";
 
-    button.classList.add("is-active");
-
-    const difficulty = button.dataset.difficulty || "";
-
+    setActiveFilter(difficulty);
+    updateUrl(difficulty);
     loadAdventures(difficulty);
   });
 });
 
-loadAdventures();
+window.addEventListener("popstate", () => {
+  const difficulty =
+    getDifficultyFromUrl();
+
+  setActiveFilter(difficulty);
+  loadAdventures(difficulty);
+});
+
+const initialDifficulty =
+  getDifficultyFromUrl();
+
+setActiveFilter(initialDifficulty);
+loadAdventures(initialDifficulty);
