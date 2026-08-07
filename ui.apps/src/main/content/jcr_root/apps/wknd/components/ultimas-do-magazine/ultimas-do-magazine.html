@@ -3,87 +3,182 @@
     data-sly-call="${clientlib.css @ categories='wknd.ultimas-do-magazine'}">
 </sly>
 
+<sly data-sly-template.articleCard="${@ artigo}">
+    <article class="cmp-ultimas-magazine__card">
+        <a class="cmp-ultimas-magazine__link"
+           href="${artigo.link @ context='uri'}">
+
+            <div class="cmp-ultimas-magazine__imagem-container">
+                <img
+                    data-sly-test="${artigo.imagem}"
+                    class="cmp-ultimas-magazine__imagem"
+                    src="${artigo.imagem @ context='uri'}"
+                    alt="${artigo.titulo}"
+                    loading="lazy">
+
+                <div
+                    data-sly-test="${!artigo.imagem}"
+                    class="cmp-ultimas-magazine__imagem-vazia"
+                    aria-hidden="true">
+                    WKND
+                </div>
+            </div>
+
+            <div class="cmp-ultimas-magazine__conteudo">
+                <h4 class="cmp-ultimas-magazine__artigo-titulo">
+                    ${artigo.titulo}
+                </h4>
+
+                <span class="cmp-ultimas-magazine__acao">
+                    Ler artigo
+                </span>
+            </div>
+        </a>
+    </article>
+</sly>
+
+
 <section
     class="cmp-ultimas-magazine"
     aria-labelledby="ultimas-magazine-titulo"
     data-sly-use.model="com.adobe.aem.guides.wknd.core.models.UltimasDoMagazine">
-    <header class="cmp-ultimas-magazine__cabecalho">
 
+    <header class="cmp-ultimas-magazine__cabecalho">
         <p class="cmp-ultimas-magazine__rotulo">
-            WKND Magazine
+            WKND Omnichannel
         </p>
 
         <h2
             id="ultimas-magazine-titulo"
             class="cmp-ultimas-magazine__titulo">
-            Últimas do Magazine
+            Magazine & Aventuras
         </h2>
-
     </header>
 
-    <ul
-        class="cmp-ultimas-magazine__grid"
-        data-sly-test="${!model.vazio}">
 
-        <sly data-sly-list.artigo="${model.artigos}">
+    <!-- Pages + Content Fragments -->
 
-            <li class="cmp-ultimas-magazine__item">
+    <div class="cmp-ultimas-magazine__omnichannel">
 
-                <article class="cmp-ultimas-magazine__card">
+        <section class="cmp-ultimas-magazine__bloco">
+            <h3 class="cmp-ultimas-magazine__subtitulo">
+                Últimas do Magazine
+            </h3>
 
-                    <a
-                        class="cmp-ultimas-magazine__link"
-                        href="${artigo.link @ context='uri'}">
+            <ul
+                class="cmp-ultimas-magazine__destaques-lista"
+                data-sly-test="${!model.vazio}">
 
-                        <div class="cmp-ultimas-magazine__imagem-container">
+                <sly data-sly-list.artigo="${model.artigos}">
+                    <li
+                        class="cmp-ultimas-magazine__item"
+                        data-sly-test="${
+                            artigoList.index == 0 ||
+                            artigoList.index == 1
+                        }">
 
-                            <img
-                                data-sly-test="${artigo.imagem}"
-                                class="cmp-ultimas-magazine__imagem"
-                                src="${artigo.imagem @ context='uri'}"
-                                alt="${artigo.titulo}"
-                                loading="lazy">
+                        <sly data-sly-call="${
+                            articleCard @ artigo=artigo
+                        }"></sly>
+                    </li>
+                </sly>
+            </ul>
 
-                            <div
-                                data-sly-test="${!artigo.imagem}"
-                                class="cmp-ultimas-magazine__imagem-vazia"
-                                aria-hidden="true">
-                                WKND
+            <div
+                class="cmp-ultimas-magazine__vazio"
+                data-sly-test="${model.vazio}">
+                Nenhum artigo foi encontrado no Magazine.
+            </div>
+        </section>
+
+
+        <section class="cmp-ultimas-magazine__bloco">
+            <h3 class="cmp-ultimas-magazine__subtitulo">
+                Aventuras recentes
+            </h3>
+
+            <ul
+                class="cmp-ultimas-magazine__destaques-lista"
+                data-sly-test="${!model.aventurasVazio}">
+
+                <sly data-sly-list.aventura="${model.aventuras}">
+                    <li class="cmp-ultimas-magazine__item">
+
+                        <article
+                            class="
+                                cmp-ultimas-magazine__card
+                                cmp-ultimas-magazine__card--aventura
+                            ">
+
+                            <div class="cmp-ultimas-magazine__imagem-container">
+                                <img
+                                    data-sly-test="${aventura.imagem}"
+                                    class="cmp-ultimas-magazine__imagem"
+                                    src="${aventura.imagem @ context='uri'}"
+                                    alt="${aventura.titulo}"
+                                    loading="lazy">
+
+                                <div
+                                    data-sly-test="${!aventura.imagem}"
+                                    class="cmp-ultimas-magazine__imagem-vazia"
+                                    aria-hidden="true">
+                                    WKND
+                                </div>
                             </div>
 
-                        </div>
+                            <div class="cmp-ultimas-magazine__conteudo">
+                                <span class="cmp-ultimas-magazine__dificuldade">
+                                    ${aventura.dificuldade}
+                                </span>
 
-                        <div class="cmp-ultimas-magazine__conteudo">
+                                <h4 class="cmp-ultimas-magazine__artigo-titulo">
+                                    ${aventura.titulo}
+                                </h4>
 
-                            <h3 class="cmp-ultimas-magazine__artigo-titulo">
-                                ${artigo.titulo}
-                            </h3>
+                                <p class="cmp-ultimas-magazine__preco">
+                                    R$ ${aventura.preco}
+                                </p>
+                            </div>
 
-                            <span
-                                class="cmp-ultimas-magazine__acao"
-                                aria-hidden="true">
-                                Ler artigo
-                            </span>
+                        </article>
+                    </li>
+                </sly>
+            </ul>
 
-                        </div>
-
-                    </a>
-
-                </article>
-
-            </li>
-
-        </sly>
-
-    </ul>
-
-    <div
-        class="cmp-ultimas-magazine__vazio"
-        data-sly-test="${model.vazio}"
-        role="status">
-
-        <p>Nenhum artigo foi encontrado no Magazine.</p>
+            <div
+                class="cmp-ultimas-magazine__vazio"
+                data-sly-test="${model.aventurasVazio}">
+                Nenhuma aventura foi encontrada.
+            </div>
+        </section>
 
     </div>
+
+
+    <!-- Demais artigos: Style System continua controlando as colunas -->
+
+    <section
+        class="cmp-ultimas-magazine__restante"
+        data-sly-test="${model.quantidade > 2}">
+
+        <h3 class="cmp-ultimas-magazine__subtitulo">
+            Mais do Magazine
+        </h3>
+
+        <ul class="cmp-ultimas-magazine__grid">
+
+            <sly data-sly-list.artigo="${model.artigos}">
+                <li
+                    class="cmp-ultimas-magazine__item"
+                    data-sly-test="${artigoList.index > 1}">
+
+                    <sly data-sly-call="${
+                        articleCard @ artigo=artigo
+                    }"></sly>
+                </li>
+            </sly>
+
+        </ul>
+    </section>
 
 </section>

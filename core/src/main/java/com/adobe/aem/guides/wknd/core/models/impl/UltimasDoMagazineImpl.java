@@ -1,6 +1,7 @@
 package com.adobe.aem.guides.wknd.core.models.impl;
 
 import com.adobe.aem.guides.wknd.core.models.ArtigoMagazine;
+import com.adobe.aem.guides.wknd.core.models.AventuraResumo;
 import com.adobe.aem.guides.wknd.core.models.UltimasDoMagazine;
 
 import com.adobe.cq.export.json.ExporterConstants;
@@ -24,6 +25,7 @@ import javax.jcr.Session;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
@@ -53,7 +55,12 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
     private static final String MAGAZINE_PATH =
         "/content/wknd/us/en/magazine";
 
+    private static final String AVENTURAS_PATH =
+        "/content/dam/wknd/aventuras";
+
     private static final int QUANTIDADE_PADRAO = 4;
+
+    private static final int QUANTIDADE_AVENTURAS = 2;
 
     private static final Logger LOG =
         LoggerFactory.getLogger(UltimasDoMagazineImpl.class);
@@ -71,17 +78,17 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
     @Default(intValues = QUANTIDADE_PADRAO)
     private int quantidade;
 
-    private List<ArtigoMagazine> artigos = Collections.emptyList();
+    private List<ArtigoMagazine> artigos =
+        Collections.emptyList();
+
+    private List<AventuraResumo> aventuras =
+        Collections.emptyList();
 
     @PostConstruct
     protected void init() {
-        int limite = quantidade > 0
-            ? quantidade
-            : QUANTIDADE_PADRAO;
-
         if (queryBuilder == null || resourceResolver == null) {
             LOG.warn(
-                "Não foi possível consultar o Magazine: "
+                "Não foi possível carregar o conteúdo: "
                     + "QueryBuilder ou ResourceResolver indisponível."
             );
             return;
@@ -96,6 +103,15 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
             return;
         }
 
+        carregarArtigos(session);
+        carregarAventuras(session);
+    }
+
+    private void carregarArtigos(Session session) {
+        int limite = quantidade > 0
+            ? quantidade
+            : QUANTIDADE_PADRAO;
+
         PageManager resolvedPageManager = pageManager;
 
         if (resolvedPageManager == null) {
@@ -104,19 +120,21 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
         }
 
         if (resolvedPageManager == null) {
-            LOG.warn("PageManager indisponível.");
+            LOG.warn(
+                "PageManager indisponível para consultar o Magazine."
+            );
             return;
         }
 
-        Map<String, String> predicates =
-            criarPredicados(limite);
-
         Query query = queryBuilder.createQuery(
-            PredicateGroup.create(predicates),
+            PredicateGroup.create(
+                criarPredicadosArtigos(limite)
+            ),
             session
         );
 
-        List<ArtigoMagazine> resultados = new ArrayList<>();
+        List<ArtigoMagazine> resultados =
+            new ArrayList<>();
 
         for (Hit hit : query.getResult().getHits()) {
             adicionarArtigo(
@@ -126,20 +144,29 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
             );
         }
 
-        artigos = Collections.unmodifiableList(resultados);
+        artigos =
+            Collections.unmodifiableList(resultados);
     }
 
-    private Map<String, String> criarPredicados(int limite) {
-        Map<String, String> predicates = new LinkedHashMap<>();
+    private Map<String, String> criarPredicadosArtigos(
+        int limite
+    ) {
+        Map<String, String> predicates =
+            new LinkedHashMap<>();
 
         predicates.put("path", MAGAZINE_PATH);
         predicates.put("type", "cq:Page");
+
         predicates.put(
             "orderby",
             "@jcr:content/jcr:created"
         );
+
         predicates.put("orderby.sort", "desc");
-        predicates.put("p.limit", String.valueOf(limite));
+        predicates.put(
+            "p.limit",
+            String.valueOf(limite)
+        );
 
         return predicates;
     }
@@ -184,8 +211,145 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
         }
     }
 
+    private void carregarAventuras(Session session) {
+        Query query = queryBuilder.createQuery(
+            PredicateGroup.create(
+                criarPredicadosAventuras()
+            ),
+            session
+        );
+
+        List<AventuraResumo> resultados =
+            new ArrayList<>();
+
+        for (Hit hit : query.getResult().getHits()) {
+            adicionarAventura(hit, resultados);
+        }
+
+        aventuras =
+            Collections.unmodifiableList(resultados);
+    }
+
+    private Map<String, String> criarPredicadosAventuras() {
+        Map<String, String> predicates =
+            new LinkedHashMap<>();
+
+        predicates.put("path", AVENTURAS_PATH);
+        predicates.put("type", "dam:Asset");
+
+        predicates.put(
+            "1_property",
+            "jcr:content/contentFragment"
+        );
+
+        predicates.put(
+            "1_property.value",
+            "true"
+        );
+
+        predicates.put(
+            "orderby",
+            "@jcr:created"
+        );
+
+        predicates.put("orderby.sort", "desc");
+
+        predicates.put(
+            "p.limit",
+            String.valueOf(QUANTIDADE_AVENTURAS)
+        );
+
+        return predicates;
+    }
+
+    private void adicionarAventura(
+        Hit hit,
+        List<AventuraResumo> resultados
+    ) {
+        try {
+            Resource fragmentResource =
+                resourceResolver.getResource(
+                    hit.getPath()
+                );
+
+            if (fragmentResource == null) {
+                return;
+            }
+
+            Resource masterResource =
+                fragmentResource.getChild(
+                    "jcr:content/data/master"
+                );
+
+            if (masterResource == null) {
+                return;
+            }
+
+            ValueMap properties =
+                masterResource.getValueMap();
+
+            String titulo =
+                properties.get("titulo", String.class);
+
+            if (isBlank(titulo)) {
+                titulo = fragmentResource.getName();
+            }
+
+            String imagem =
+                properties.get("imagem", String.class);
+
+            String dificuldade =
+                properties.get(
+                    "dificuldade",
+                    String.class
+                );
+
+            double preco = obterPreco(
+                properties.get("preco")
+            );
+
+            resultados.add(
+                new AventuraResumo(
+                    titulo,
+                    imagem,
+                    dificuldade,
+                    preco
+                )
+            );
+
+        } catch (RepositoryException exception) {
+            LOG.warn(
+                "Não foi possível processar "
+                    + "um Content Fragment de Aventura.",
+                exception
+            );
+        }
+    }
+
+    private double obterPreco(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+
+        if (value != null) {
+            try {
+                return Double.parseDouble(
+                    String.valueOf(value)
+                );
+            } catch (NumberFormatException exception) {
+                LOG.debug(
+                    "Preço inválido no Content Fragment: {}",
+                    value
+                );
+            }
+        }
+
+        return 0;
+    }
+
     private String localizarImagem(Page page) {
-        Resource contentResource = page.getContentResource();
+        Resource contentResource =
+            page.getContentResource();
 
         if (contentResource == null) {
             return "";
@@ -215,14 +379,18 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
         );
     }
 
-    private String obterFileReference(Resource resource) {
+    private String obterFileReference(
+        Resource resource
+    ) {
         if (resource == null) {
             return "";
         }
 
-        String fileReference = resource
-            .getValueMap()
-            .get("fileReference", String.class);
+        String fileReference =
+            resource.getValueMap().get(
+                "fileReference",
+                String.class
+            );
 
         return fileReference == null
             ? ""
@@ -237,7 +405,8 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
             return "";
         }
 
-        String referencia = obterFileReference(resource);
+        String referencia =
+            obterFileReference(resource);
 
         if (!isBlank(referencia)) {
             return referencia;
@@ -259,7 +428,8 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
     }
 
     private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
+        return value == null
+            || value.trim().isEmpty();
     }
 
     @Override
@@ -275,7 +445,17 @@ public class UltimasDoMagazineImpl implements UltimasDoMagazine {
     }
 
     @Override
+    public List<AventuraResumo> getAventuras() {
+        return aventuras;
+    }
+
+    @Override
     public boolean isVazio() {
         return artigos.isEmpty();
+    }
+
+    @Override
+    public boolean isAventurasVazio() {
+        return aventuras.isEmpty();
     }
 }
