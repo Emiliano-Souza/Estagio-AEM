@@ -8,6 +8,7 @@
       "http://127\\.0\\.0\\.1:.*"
     ],
     "allowedpaths": [
+      "/content/wknd/.*",
       "/graphql/execute.json.*",
       "/content/_cq_graphql/wknd-shared/endpoint.json",
       "/content/experience-fragments/.*"
