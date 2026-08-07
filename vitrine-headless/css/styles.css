@@ -1,4 +1,3 @@
-
 * {
   box-sizing: border-box;
 }
@@ -126,7 +125,17 @@ main.container {
   margin-bottom: 20px;
 }
 
-#results-count {
+.section-heading__eyebrow {
+  margin: 0 0 6px;
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+#results-count,
+#magazine-count {
   margin: 0;
   color: var(--color-muted);
 }
@@ -152,7 +161,7 @@ main.container {
   background: #fff5f5;
 }
 
-/* Grid mobile-first */
+/* Aventuras */
 
 .adventures-grid {
   display: grid;
@@ -160,7 +169,7 @@ main.container {
   gap: 22px;
 }
 
-/* Card */
+/* Card de aventura */
 
 .adventure-card {
   overflow: hidden;
@@ -256,6 +265,106 @@ main.container {
   white-space: nowrap;
 }
 
+/* Da Revista */
+
+.magazine {
+  margin-top: 72px;
+  padding-top: 40px;
+  border-top: 1px solid var(--color-border);
+}
+
+.magazine-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+}
+
+/* Card da revista */
+
+.magazine-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.magazine-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+}
+
+.magazine-card__link {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.magazine-card__link:focus-visible {
+  outline: 3px solid rgba(230, 180, 74, 0.55);
+  outline-offset: -3px;
+}
+
+.magazine-card__image-wrapper {
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: #deded8;
+}
+
+.magazine-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.magazine-card:hover .magazine-card__image {
+  transform: scale(1.03);
+}
+
+.magazine-card__image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-muted);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.magazine-card__content {
+  padding: 22px;
+}
+
+.magazine-card__eyebrow {
+  margin: 0 0 8px;
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.magazine-card__title {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.magazine-card__action {
+  display: inline-block;
+  margin-top: 18px;
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 /* Tablet */
 
 @media (min-width: 640px) {
@@ -269,7 +378,8 @@ main.container {
     justify-content: space-between;
   }
 
-  .adventures-grid {
+  .adventures-grid,
+  .magazine-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -282,6 +392,11 @@ main.container {
   }
 
   .adventures-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+  }
+
+  .magazine-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 28px;
   }
